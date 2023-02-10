@@ -20,7 +20,10 @@ async def root():
     for current_class in available_clusters:
         samples = data_array[labels == current_class]
         cluster_center = np.mean(samples, axis=0)
-        cluster_centers.append(tuple(cluster_center))
+        cluster_radius = np.max(np.linalg.norm(samples - cluster_center, axis=1))
+        array_to_list = list(cluster_center)
+        array_to_list.append(cluster_radius)
+        cluster_centers.append(array_to_list)
     return cluster_centers
 
 
