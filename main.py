@@ -10,5 +10,5 @@ async def root(time_window: int, distance_in_m: int = 20, cluster_threshold: int
     data = get_all_coordinates(time_window)
     cluster_number = get_clusters_number(distance_in_m, data)
     if cluster_number > cluster_threshold:
-        return {"send": True}
-    return {"send": False}
+        return {"send": 1}
+    return {"send": 0}
