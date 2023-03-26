@@ -1,29 +1,14 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram, linkage
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 
 
-def agglomerative(data, distance):
-    hierarchical_cluster = AgglomerativeClustering(distance_threshold=distance, affinity='euclidean', linkage='ward', n_clusters=None)
-    labels = hierarchical_cluster.fit_predict(data)
-    x = [tup[0] for tup in data]
-    y = [tup[1] for tup in data]
-
-    plt.scatter(x ,y, c=labels)
-    # print(data)
-    print(labels)
-    # for i in np.unique(labels):
-        # cluster = data[labels==i]
-        # print(cluster)
-        # mean = np.mean(cluster, axis=0)
-        # radius = np.max(np.linalg.norm(cluster - mean, axis=1))
-        # circle = plt.Circle(mean, radius, color='black', fill=False)
-        # plt.gca().add_artist(circle)
-
-    plt.show()
-
-def linage(data):
-    linkage_data = linkage(data, method='ward', metric='euclidean')
-    dendrogram(linkage_data)
-    plt.show()
+def get_clusters_number(distance_in_meters, data):
+    meters_per_radian = 6371000
+    distance_in_meters = distance_in_meters  # e.g. 20m
+    epsilon = distance_in_meters / meters_per_radian
+    db = DBSCAN(
+        eps=epsilon, min_samples=1, algorithm="ball_tree", metric="haversine"
+    ).fit(np.radians(data))
+    cluster_labels = db.labels_
+    num_clusters = len(set(cluster_labels))
+    return num_clusters

@@ -1,22 +1,28 @@
-import datetime
-from sqlalchemy import create_engine, func, or_, and_, not_, MetaData
-# from sqlalchemy import Boolean, Column, Integer, String, Date, desc
+from sqlalchemy import create_engine, func, text
+
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
-engine = create_engine('mysql+mysqlconnector://root:mypassword@192.168.88.236:3308/sosprojectdb')
-# metadata = MetaData()
-# metadata.reflect(bind=engine)
+engine = create_engine(
+    "mysql+mysqlconnector://root:mypassword@192.168.88.236:3308/sosprojectdb"
+)
+
 Base = automap_base()
-# # columns = [Column('daterange', DATERANGE)]
 Base.prepare(engine, reflect=True)
-#
-# Assignments = Base.classes.assignment_assignment
-#
+
 Incident = Base.classes.incident
 Users = Base.classes.users
 Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
-def get_all_coordinates():
+
+def get_all_coordinates(time_window):
     session = Session()
-    return [(coord.latitude, coord.longitude) for coord in session.query(Users).all()]
+    # Create the query
+    query = session.query(Users.latitude, Users.longitude). \
+        join(Incident, Users.id == Incident.user_id). \
+        filter(Incident.created_at >= func.now() - text(f"INTERVAL {time_window} MINUTE"))
+
+    return [
+        (float(coord.latitude), float(coord.longitude))
+        for coord in query.all()
+    ]
