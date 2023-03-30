@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
 engine = create_engine(
-    "mysql+mysqlconnector://root:mypassword@192.168.88.236:3308/sosprojectdb"
+    "mysql+mysqlconnector://root:mypassword@192.168.1.100:3308/sosprojectdb"
 )
 
 Base = automap_base()
